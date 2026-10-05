@@ -11,7 +11,7 @@ import geopandas as gpd
 from google import genai
 from weasyprint import HTML
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 client = genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 IST = dt.timezone(dt.timedelta(hours=5, minutes=30))
 TODAY = dt.datetime.now(IST)
