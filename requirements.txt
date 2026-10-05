@@ -1,0 +1,8 @@
+feedparser
+trafilatura
+google-genai
+weasyprint
+geopandas
+pyogrio
+matplotlib
+requests
