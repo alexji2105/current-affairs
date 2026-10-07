@@ -3,6 +3,6 @@ trafilatura
 google-genai
 weasyprint
 geopandas
-pyogrio
+shapely
 matplotlib
 requests
