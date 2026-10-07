@@ -1,39 +1,38 @@
-# Save this file in your repo as: .github/workflows/daily.yml
-name: Daily Current Affairs PDF
-
+name: Daily current affairs PDF
 on:
   schedule:
-    - cron: "30 0 * * *"   # 06:00 AM IST every day (GitHub uses UTC)
-  workflow_dispatch:        # lets you run it manually to test
-
+    - cron: "30 23 * * *"      # 23:30 UTC = 05:00 IST (GitHub can start 10-30 min late)
+  workflow_dispatch:
+    inputs:
+      target_date:
+        description: "News date YYYY-MM-DD (blank = yesterday IST)"
+        required: false
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-
-      - name: System packages (PDF engine + fonts)
+          cache: pip
+      - name: System libraries and Hindi fonts
         run: |
           sudo apt-get update
           sudo apt-get install -y libpango-1.0-0 libpangoft2-1.0-0 fonts-noto-core
-
-      - name: Install Python packages
-        run: pip install -r requirements.txt
-
-      - name: Build PDF and send to Telegram
+      - run: pip install -r requirements.txt
+      - run: python fetch_data.py
+      - run: python main.py
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          TG_TOKEN: ${{ secrets.TG_TOKEN }}
-          TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
-        run: python main.py
-
-      - name: Keep a copy of the PDF
-        uses: actions/upload-artifact@v4
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          GMAIL_USER: ${{ secrets.GMAIL_USER }}
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          TARGET_DATE: ${{ github.event.inputs.target_date }}
+      - uses: actions/upload-artifact@v4
         with:
           name: current-affairs-pdf
-          path: Current_Affairs_*.pdf
+          path: output/*.pdf
